@@ -133,7 +133,7 @@ public class testRubix {
         }
 
         public void move(Orientation face, Orientation direction) {
-            System.out.println(face.toString() + " " + direction.toString());
+            System.out.println("##" + face.toString() + " " + direction.toString());
             pieces.stream().filter(p -> p.onSide(face)).forEach(p->p.move(direction));
         }
 
@@ -157,6 +157,7 @@ public class testRubix {
 
     @Test
     public void print() {
+        System.out.println("#rubix");
         cube cube = testRubix.cube.a();
         System.out.print(cube.toString());
         cube.move(Orientation.left, Orientation.up);
