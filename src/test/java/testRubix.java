@@ -133,7 +133,7 @@ public class testRubix {
         }
 
         public void move(Orientation face, Orientation direction) {
-            System.out.println("##" + face.toString() + " " + direction.toString());
+            System.out.println("**" + face.toString() + " " + direction.toString() + "**");
             pieces.stream().filter(p -> p.onSide(face)).forEach(p->p.move(direction));
         }
 

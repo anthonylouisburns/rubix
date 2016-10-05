@@ -9,7 +9,7 @@ WW
 GG   
 GG   
 
-##left up
+**left up**
 
 BY   
 BY   
@@ -20,7 +20,7 @@ GW
 YG   
 YG   
 
-##left down
+**left down**
 
 YY   
 YY   
@@ -31,7 +31,7 @@ WW
 GG   
 GG   
 
-##right up
+**right up**
 
 YB   
 YB   
@@ -42,7 +42,7 @@ WG
 GY   
 GY   
 
-##right down
+**right down**
 
 YY   
 YY   
@@ -53,7 +53,7 @@ WW
 GG   
 GG   
 
-##up left
+**up left**
 
 YY   
 YY   
@@ -64,7 +64,7 @@ WW
 GG   
 OO   
 
-##up right
+**up right**
 
 YY   
 YY   
@@ -75,7 +75,7 @@ WW
 GG   
 GG   
 
-##down right
+**down right**
 
 YY   
 YY   
@@ -86,7 +86,7 @@ WW
 RR   
 GG   
 
-##down left
+**down left**
 
 YY   
 YY   
@@ -97,10 +97,10 @@ WW
 GG   
 GG   
 
-##left up
-##right up
-##left up
-##right up
+**left up**
+**right up**
+**left up**
+**right up**
 
 WW   
 WW   
@@ -109,4 +109,7 @@ GGRROO
 YY   
 YY   
 BB   
-BB  
+BB   
+
+
+Process finished with exit code 0
