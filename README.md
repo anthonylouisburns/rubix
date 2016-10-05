@@ -1,5 +1,7 @@
 #rubix
 
+neeto - http://www.html5rubik.com/tutorial/
+
 YY   
 YY   
 BBRROO   
