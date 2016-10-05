@@ -142,14 +142,14 @@ public class testRubix {
         }
 
         public String toString() {
-            return "\n  " + color(Orientation.up, Orientation.left, Orientation.backward) + color(Orientation.up, Orientation.right, Orientation.backward) + "   \n" +
-                    "  " + color(Orientation.up, Orientation.left, Orientation.forward) + color(Orientation.up, Orientation.right, Orientation.forward) + "   \n" +
-                    color(Orientation.left, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.forward, Orientation.up) + color(Orientation.forward, Orientation.left, Orientation.up) + color(Orientation.forward, Orientation.right, Orientation.up) + color(Orientation.right, Orientation.forward, Orientation.up) + color(Orientation.right, Orientation.backward, Orientation.up) + "   \n" +
-                    color(Orientation.left, Orientation.backward, Orientation.down) + color(Orientation.left, Orientation.forward, Orientation.down) + color(Orientation.forward, Orientation.left, Orientation.down) + color(Orientation.forward, Orientation.right, Orientation.down) + color(Orientation.right, Orientation.forward, Orientation.down) + color(Orientation.right, Orientation.backward, Orientation.down) + "   \n" +
-                    "  " + color(Orientation.down, Orientation.left, Orientation.forward) + color(Orientation.down, Orientation.right, Orientation.forward) + "   \n" +
-                    "  " + color(Orientation.down, Orientation.left, Orientation.backward) + color(Orientation.down, Orientation.right, Orientation.backward) + "   \n" +
-                    "  " + color(Orientation.backward, Orientation.left, Orientation.down) + color(Orientation.backward, Orientation.right, Orientation.down) + "   \n" +
-                    "  " + color(Orientation.backward, Orientation.left, Orientation.up) + color(Orientation.backward, Orientation.right, Orientation.up) + "   \n\n"
+            return "\n" + color(Orientation.up, Orientation.left, Orientation.backward) + color(Orientation.up, Orientation.right, Orientation.backward) + "   \n" +
+                    color(Orientation.up, Orientation.left, Orientation.forward) + color(Orientation.up, Orientation.right, Orientation.forward) + "   \n" +
+                    color(Orientation.forward, Orientation.left, Orientation.up) + color(Orientation.forward, Orientation.right, Orientation.up) + color(Orientation.right, Orientation.forward, Orientation.up) + color(Orientation.right, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.forward, Orientation.up) +  "   \n" +
+                    color(Orientation.forward, Orientation.left, Orientation.down) + color(Orientation.forward, Orientation.right, Orientation.down) + color(Orientation.right, Orientation.forward, Orientation.down) + color(Orientation.right, Orientation.backward, Orientation.down) + color(Orientation.left, Orientation.backward, Orientation.down) + color(Orientation.left, Orientation.forward, Orientation.down) + "   \n" +
+                    color(Orientation.down, Orientation.left, Orientation.forward) + color(Orientation.down, Orientation.right, Orientation.forward) + "   \n" +
+                    color(Orientation.down, Orientation.left, Orientation.backward) + color(Orientation.down, Orientation.right, Orientation.backward) + "   \n" +
+                    color(Orientation.backward, Orientation.left, Orientation.down) + color(Orientation.backward, Orientation.right, Orientation.down) + "   \n" +
+                    color(Orientation.backward, Orientation.left, Orientation.up) + color(Orientation.backward, Orientation.right, Orientation.up) + "   \n\n"
                     ;
         }
 
