@@ -1,15 +1,14 @@
 import org.junit.Test;
 
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class testRubix {
+public class testRubixImmutable {
     public static enum Color {
         W, R, B, G, O, Y
     }
@@ -27,6 +26,10 @@ public class testRubix {
             this.o = o;
         }
 
+        public Side a(Color c, Orientation o) {
+            return new Side(c, o);
+        }
+
         public Color getC() {
             return c;
         }
@@ -39,36 +42,37 @@ public class testRubix {
             this.o = o;
         }
 
-        public void move(Orientation move) {
+        public Side move(Orientation move) {
             if (move == Orientation.left) {
-                if (o == Orientation.down) return;
-                else if (o == Orientation.up) return;
-                else if (o == Orientation.left) o = Orientation.backward;
-                else if (o == Orientation.right) o = Orientation.forward;
-                else if (o == Orientation.forward) o = Orientation.left;
-                else if (o == Orientation.backward) o = Orientation.right;
+                if (o == Orientation.down) return this;
+                else if (o == Orientation.up) return this;
+                else if (o == Orientation.left) return a(c, Orientation.backward);
+                else if (o == Orientation.right) return a(c, Orientation.forward);
+                else if (o == Orientation.forward) return a(c, Orientation.left);
+                else if (o == Orientation.backward) return a(c, Orientation.right);
             } else if (move == Orientation.right) {
-                if (o == Orientation.down) return;
-                else if (o == Orientation.up) return;
-                else if (o == Orientation.left) o = Orientation.forward;
-                else if (o == Orientation.right) o = Orientation.backward;
-                else if (o == Orientation.forward) o = Orientation.right;
-                else if (o == Orientation.backward) o = Orientation.left;
+                if (o == Orientation.down) return this;
+                else if (o == Orientation.up) return this;
+                else if (o == Orientation.left) return a(c, Orientation.forward);
+                else if (o == Orientation.right) return a(c, Orientation.backward);
+                else if (o == Orientation.forward) return a(c, Orientation.right);
+                else if (o == Orientation.backward) return a(c, Orientation.left);
             } else if (move == Orientation.up) {
-                if (o == Orientation.down) o = Orientation.forward;
-                else if (o == Orientation.up) o = Orientation.backward;
-                else if (o == Orientation.left) return;
-                else if (o == Orientation.right) return;
-                else if (o == Orientation.forward) o = Orientation.up;
-                else if (o == Orientation.backward) o = Orientation.down;
+                if (o == Orientation.down) return a(c, Orientation.forward);
+                else if (o == Orientation.up) return a(c, Orientation.backward);
+                else if (o == Orientation.left) return this;
+                else if (o == Orientation.right) return this;
+                else if (o == Orientation.forward) return a(c, Orientation.up);
+                else if (o == Orientation.backward) return a(c, Orientation.down);
             } else if (move == Orientation.down) {
-                if (o == Orientation.down) o = Orientation.backward;
-                else if (o == Orientation.up) o = Orientation.forward;
-                else if (o == Orientation.left) return;
-                else if (o == Orientation.right) return;
-                else if (o == Orientation.forward) o = Orientation.down;
-                else if (o == Orientation.backward) o = Orientation.up;
+                if (o == Orientation.down) return a(c, Orientation.backward);
+                else if (o == Orientation.up) return a(c, Orientation.forward);
+                else if (o == Orientation.left) return this;
+                else if (o == Orientation.right) return this;
+                else if (o == Orientation.forward) return a(c, Orientation.down);
+                else if (o == Orientation.backward) return a(c, Orientation.up);
             }
+            return this;
         }
 
 
@@ -110,8 +114,8 @@ public class testRubix {
             return sides;
         }
 
-        public void move(Orientation move) {
-            sides.stream().forEach(s->s.move(move));
+        public Piece move(Orientation move) {
+            return new Piece(sides.stream().map(s -> s.move(move)).collect(Collectors.toList()));
         }
 
         public boolean onSide(Orientation o) {
@@ -162,13 +166,21 @@ public class testRubix {
             return new Cube(pieces);
         }
 
-        public void move(Move move) {
-            move(move.getFace(), move.getDirection());
+        public Cube move(Move move) {
+            return move(move.getFace(), move.getDirection());
         }
 
-        public void move(Orientation face, Orientation direction) {
-            System.out.println("**" + face.toString() + " " + direction.toString() + "**");
-            pieces.stream().filter(p -> p.onSide(face)).forEach(p->p.move(direction));
+        public Cube move(Orientation face, Orientation direction) {
+//            System.out.println("**" + face.toString() + " " + direction.toString() + "**");
+            return new Cube(pieces.stream()
+                    .map(p -> {
+                        if (p.onSide(face)) {
+                            return p.move(direction);
+                        } else {
+                            return p;
+                        }
+                    })
+                    .collect(Collectors.toList()));
         }
 
         public String color(Orientation face, Orientation o1, Orientation o2) {
@@ -178,7 +190,7 @@ public class testRubix {
         public String toString() {
             return "\n" + color(Orientation.up, Orientation.left, Orientation.backward) + color(Orientation.up, Orientation.right, Orientation.backward) + "   \n" +
                     color(Orientation.up, Orientation.left, Orientation.forward) + color(Orientation.up, Orientation.right, Orientation.forward) + "   \n" +
-                    color(Orientation.forward, Orientation.left, Orientation.up) + color(Orientation.forward, Orientation.right, Orientation.up) + color(Orientation.right, Orientation.forward, Orientation.up) + color(Orientation.right, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.forward, Orientation.up) +  "   \n" +
+                    color(Orientation.forward, Orientation.left, Orientation.up) + color(Orientation.forward, Orientation.right, Orientation.up) + color(Orientation.right, Orientation.forward, Orientation.up) + color(Orientation.right, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.backward, Orientation.up) + color(Orientation.left, Orientation.forward, Orientation.up) + "   \n" +
                     color(Orientation.forward, Orientation.left, Orientation.down) + color(Orientation.forward, Orientation.right, Orientation.down) + color(Orientation.right, Orientation.forward, Orientation.down) + color(Orientation.right, Orientation.backward, Orientation.down) + color(Orientation.left, Orientation.backward, Orientation.down) + color(Orientation.left, Orientation.forward, Orientation.down) + "   \n" +
                     color(Orientation.down, Orientation.left, Orientation.forward) + color(Orientation.down, Orientation.right, Orientation.forward) + "   \n" +
                     color(Orientation.down, Orientation.left, Orientation.backward) + color(Orientation.down, Orientation.right, Orientation.backward) + "   \n" +
@@ -200,12 +212,14 @@ public class testRubix {
             return Objects.hash(pieces);
         }
     }
+
     private static final SecureRandom random = new SecureRandom();
 
-    public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+    public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = random.nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
     }
+
     public enum Move {
         left_up(Orientation.left, Orientation.up),
         left_down(Orientation.left, Orientation.down),
@@ -232,6 +246,7 @@ public class testRubix {
             return direction;
         }
     }
+
     @Test
     public void print() {
         System.out.println("#rubix");
@@ -271,6 +286,24 @@ public class testRubix {
         System.out.println(piece);
     }
 
+    public class State {
+        public State(Cube cube, List<Move> moves) {
+            this.cube = cube;
+            this.moves = moves;
+        }
+
+        public final Cube cube;
+        public final List<Move> moves;
+
+        public Cube getCube() {
+            return cube;
+        }
+
+        public List<Move> getMoves() {
+            return moves;
+        }
+    }
+
     @Test
     public void equals() {
         Cube cube1 = Cube.a();
@@ -281,5 +314,43 @@ public class testRubix {
         assertThat(cube1, not(equalTo(cube2)));
         cube2.move(Move.down_left);
         assertThat(cube1, equalTo(cube2));
+    }
+
+    public <T> List<T> concat(List<T> a, List<T> b){
+        List<T> all = new ArrayList<T>(a);
+        all.addAll(b);
+        return all;
+    }
+    public <T> List<T> concat(List<T> a, T b){
+        List<T> all = new ArrayList<T>(a);
+        all.add(b);
+        return all;
+    }
+
+    public List<State> getStates(List<State> active_states, List<State> states, List<Cube> cubes) {
+        System.out.println(" active_states:" + Integer.toString(active_states.size()) + " active_states:" + Integer.toString(states.size()) + " cubes:" + Integer.toString(cubes.size()));
+        if (active_states.size() == 0) return states;
+        else {
+            List<State> new_states = active_states.stream()
+                    .flatMap(a -> Arrays.stream(Move.values()).map(m->{
+                        Cube c = a.getCube().move(m);
+                        List<Move> moves = concat(a.getMoves(), m);
+                        return new State(c, moves);
+                    }))
+                    .filter(s->!cubes.contains(s.getCube()))
+                    .collect(Collectors.toList());
+
+            List<Cube> updated_cubes = concat(cubes, new_states.stream().map(s->s.getCube()).collect(Collectors.toList()));
+            List<State> updated_states = concat(states, new_states);
+            return getStates(new_states, updated_states, updated_cubes);
+        }
+    }
+
+    @Test
+    public void solution() {
+        Cube cube = Cube.a();
+        State state = new State(cube, Collections.EMPTY_LIST);
+        System.out.println(cube);
+        getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube));
     }
 }
