@@ -2,6 +2,8 @@ import org.junit.Test;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -15,6 +17,10 @@ public class testRubixImmutable {
 
     public static enum Orientation {
         left, right, up, down, forward, backward
+    }
+
+    public static enum MoveDirection {
+        left, right, up, down, twistLeft, twistRight
     }
 
     public static class Side {
@@ -42,35 +48,49 @@ public class testRubixImmutable {
             this.o = o;
         }
 
-        public Side move(Orientation move) {
-            if (move == Orientation.left) {
+        public Side move(MoveDirection move) {
+            if (move == MoveDirection.left) {
                 if (o == Orientation.down) return this;
                 else if (o == Orientation.up) return this;
                 else if (o == Orientation.left) return a(c, Orientation.backward);
                 else if (o == Orientation.right) return a(c, Orientation.forward);
                 else if (o == Orientation.forward) return a(c, Orientation.left);
                 else if (o == Orientation.backward) return a(c, Orientation.right);
-            } else if (move == Orientation.right) {
+            } else if (move == MoveDirection.right) {
                 if (o == Orientation.down) return this;
                 else if (o == Orientation.up) return this;
                 else if (o == Orientation.left) return a(c, Orientation.forward);
                 else if (o == Orientation.right) return a(c, Orientation.backward);
                 else if (o == Orientation.forward) return a(c, Orientation.right);
                 else if (o == Orientation.backward) return a(c, Orientation.left);
-            } else if (move == Orientation.up) {
+            } else if (move == MoveDirection.up) {
                 if (o == Orientation.down) return a(c, Orientation.forward);
                 else if (o == Orientation.up) return a(c, Orientation.backward);
                 else if (o == Orientation.left) return this;
                 else if (o == Orientation.right) return this;
                 else if (o == Orientation.forward) return a(c, Orientation.up);
                 else if (o == Orientation.backward) return a(c, Orientation.down);
-            } else if (move == Orientation.down) {
+            } else if (move == MoveDirection.down) {
                 if (o == Orientation.down) return a(c, Orientation.backward);
                 else if (o == Orientation.up) return a(c, Orientation.forward);
                 else if (o == Orientation.left) return this;
                 else if (o == Orientation.right) return this;
                 else if (o == Orientation.forward) return a(c, Orientation.down);
                 else if (o == Orientation.backward) return a(c, Orientation.up);
+            } else if (move == MoveDirection.twistLeft) {
+                if (o == Orientation.down) return a(c, Orientation.right);
+                else if (o == Orientation.up) return a(c, Orientation.left);
+                else if (o == Orientation.left) return a(c, Orientation.down);
+                else if (o == Orientation.right) return a(c, Orientation.up);
+                else if (o == Orientation.forward) return this;
+                else if (o == Orientation.backward) return this;
+            } else if (move == MoveDirection.twistRight) {
+                if (o == Orientation.down) return a(c, Orientation.left);
+                else if (o == Orientation.up) return a(c, Orientation.right);
+                else if (o == Orientation.left) return a(c, Orientation.up);
+                else if (o == Orientation.right) return a(c, Orientation.down);
+                else if (o == Orientation.forward) return this;
+                else if (o == Orientation.backward) return this;
             }
             return this;
         }
@@ -114,7 +134,7 @@ public class testRubixImmutable {
             return sides;
         }
 
-        public Piece move(Orientation move) {
+        public Piece move(MoveDirection move) {
             return new Piece(sides.stream().map(s -> s.move(move)).collect(Collectors.toList()));
         }
 
@@ -170,7 +190,7 @@ public class testRubixImmutable {
             return move(move.getFace(), move.getDirection());
         }
 
-        public Cube move(Orientation face, Orientation direction) {
+        public Cube move(Orientation face, MoveDirection direction) {
 //            System.out.println("**" + face.toString() + " " + direction.toString() + "**");
             return new Cube(pieces.stream()
                     .map(p -> {
@@ -221,18 +241,22 @@ public class testRubixImmutable {
     }
 
     public enum Move {
-        left_up(Orientation.left, Orientation.up),
-        left_down(Orientation.left, Orientation.down),
-        right_up(Orientation.right, Orientation.up),
-        right_down(Orientation.right, Orientation.down),
-        up_left(Orientation.up, Orientation.left),
-        up_right(Orientation.up, Orientation.right),
-        down_left(Orientation.down, Orientation.left),
-        down_right(Orientation.down, Orientation.right);
+        left_up(Orientation.left, MoveDirection.up),
+        left_down(Orientation.left, MoveDirection.down),
+        right_up(Orientation.right, MoveDirection.up),
+        right_down(Orientation.right, MoveDirection.down),
+        up_left(Orientation.up, MoveDirection.left),
+        up_right(Orientation.up, MoveDirection.right),
+        down_left(Orientation.down, MoveDirection.left),
+        down_right(Orientation.down, MoveDirection.right),
+        forward_twistLeft(Orientation.forward, MoveDirection.twistLeft),
+        forward_twistRight(Orientation.forward, MoveDirection.twistRight),
+        backward_twistLeft(Orientation.backward, MoveDirection.twistLeft),
+        backward_twistRight(Orientation.backward, MoveDirection.twistRight);
         private final Orientation face;
-        private final Orientation direction;
+        private final MoveDirection direction;
 
-        Move(Orientation face, Orientation direction) {
+        Move(Orientation face, MoveDirection direction) {
             this.face = face;
             this.direction = direction;
         }
@@ -242,7 +266,7 @@ public class testRubixImmutable {
             return face;
         }
 
-        public Orientation getDirection() {
+        public MoveDirection getDirection() {
             return direction;
         }
     }
@@ -252,28 +276,28 @@ public class testRubixImmutable {
         System.out.println("#rubix");
         Cube cube = Cube.a();
         System.out.print(cube.toString());
-        cube.move(Orientation.left, Orientation.up);
+        cube.move(Orientation.left, MoveDirection.up);
         System.out.print(cube.toString());
-        cube.move(Orientation.left, Orientation.down);
+        cube.move(Orientation.left, MoveDirection.down);
         System.out.print(cube.toString());
-        cube.move(Orientation.right, Orientation.up);
+        cube.move(Orientation.right, MoveDirection.up);
         System.out.print(cube.toString());
-        cube.move(Orientation.right, Orientation.down);
+        cube.move(Orientation.right, MoveDirection.down);
         System.out.print(cube.toString());
-        cube.move(Orientation.up, Orientation.left);
+        cube.move(Orientation.up, MoveDirection.left);
         System.out.print(cube.toString());
-        cube.move(Orientation.up, Orientation.right);
+        cube.move(Orientation.up, MoveDirection.right);
         System.out.print(cube.toString());
-        cube.move(Orientation.down, Orientation.right);
+        cube.move(Orientation.down, MoveDirection.right);
         System.out.print(cube.toString());
-        cube.move(Orientation.down, Orientation.left);
+        cube.move(Orientation.down, MoveDirection.left);
         System.out.print(cube.toString());
 
 
-        cube.move(Orientation.left, Orientation.up);
-        cube.move(Orientation.right, Orientation.up);
-        cube.move(Orientation.left, Orientation.up);
-        cube.move(Orientation.right, Orientation.up);
+        cube.move(Orientation.left, MoveDirection.up);
+        cube.move(Orientation.right, MoveDirection.up);
+        cube.move(Orientation.left, MoveDirection.up);
+        cube.move(Orientation.right, MoveDirection.up);
         System.out.print(cube.toString());
     }
 
@@ -282,7 +306,7 @@ public class testRubixImmutable {
     public void left() {
         Piece piece = new Piece(Arrays.asList(new Side(Color.Y, Orientation.up), new Side(Color.O, Orientation.left), new Side(Color.B, Orientation.forward)));
         System.out.println(piece);
-        piece.move(Orientation.left);
+        piece.move(MoveDirection.left);
         System.out.println(piece);
     }
 
@@ -302,6 +326,14 @@ public class testRubixImmutable {
         public List<Move> getMoves() {
             return moves;
         }
+
+        @Override
+        public String toString() {
+            return "State{" +
+                    "moves=" + moves +
+                    ", cube=" + cube +
+                    '}';
+        }
     }
 
     @Test
@@ -310,39 +342,59 @@ public class testRubixImmutable {
         Cube cube2 = Cube.a();
 
         assertThat(cube1, equalTo(cube2));
-        cube1.move(Move.down_left);
+        cube1 = movePrint(cube1, Move.forward_twistLeft);
         assertThat(cube1, not(equalTo(cube2)));
-        cube2.move(Move.down_left);
+        cube1 = movePrint(cube1, Move.forward_twistRight);
+        assertThat(cube1, equalTo(cube2));
+        cube1 = movePrint(cube1, Move.backward_twistLeft);
+        assertThat(cube1, not(equalTo(cube2)));
+        cube1 = movePrint(cube1, Move.backward_twistLeft);
         assertThat(cube1, equalTo(cube2));
     }
 
-    public <T> List<T> concat(List<T> a, List<T> b){
+    private Cube movePrint(Cube cube1, Move forward_twistLeft) {
+        cube1 = cube1.move(forward_twistLeft);
+        System.out.print(cube1.toString());
+        return cube1;
+    }
+
+    public <T> List<T> concat(List<T> a, List<T> b) {
         List<T> all = new ArrayList<T>(a);
         all.addAll(b);
         return all;
     }
-    public <T> List<T> concat(List<T> a, T b){
+
+    public <T> List<T> concat(List<T> a, T b) {
         List<T> all = new ArrayList<T>(a);
         all.add(b);
         return all;
     }
 
-    public List<State> getStates(List<State> active_states, List<State> states, List<Cube> cubes) {
+    public State getStates(List<State> active_states,
+                           List<State> states,
+                           List<Cube> cubes,
+                           Predicate<Cube> solved) {
         System.out.println(" active_states:" + Integer.toString(active_states.size()) + " active_states:" + Integer.toString(states.size()) + " cubes:" + Integer.toString(cubes.size()));
-        if (active_states.size() == 0) return states;
+        if (active_states.size() == 0) throw new RuntimeException("impossible");
         else {
             List<State> new_states = active_states.stream()
-                    .flatMap(a -> Arrays.stream(Move.values()).map(m->{
+                    .flatMap(a -> Arrays.stream(Move.values()).map(m -> {
                         Cube c = a.getCube().move(m);
                         List<Move> moves = concat(a.getMoves(), m);
                         return new State(c, moves);
                     }))
-                    .filter(s->!cubes.contains(s.getCube()))
+                    .filter(s -> !cubes.contains(s.getCube()))
                     .collect(Collectors.toList());
 
-            List<Cube> updated_cubes = concat(cubes, new_states.stream().map(s->s.getCube()).collect(Collectors.toList()));
-            List<State> updated_states = concat(states, new_states);
-            return getStates(new_states, updated_states, updated_cubes);
+            Optional<State> solution = new_states.stream().filter(s -> solved.test(s.getCube())).findFirst();
+            if (solution.isPresent()) {
+                return solution.get();
+            } else {
+                List<Cube> new_cubes = new_states.stream().map(s -> s.getCube()).collect(Collectors.toList());
+                List<Cube> updated_cubes = concat(cubes, new_cubes);
+                List<State> updated_states = concat(states, new_states);
+                return getStates(new_states, updated_states, updated_cubes, solved);
+            }
         }
     }
 
@@ -350,7 +402,7 @@ public class testRubixImmutable {
     public void solution() {
         Cube cube = Cube.a();
         State state = new State(cube, Collections.EMPTY_LIST);
-        System.out.println(cube);
-        getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube));
+        State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), c->cube.move(Move.backward_twistLeft).equals(c));
+        System.out.println(solution);
     }
 }
