@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -369,6 +370,11 @@ public class testRubixImmutable {
         return all;
     }
 
+    public State solve(Cube cube, Predicate<Cube> solved){
+        State state = new State(cube, Collections.emptyList());
+        return getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::complete);
+    }
+
     public State getStates(List<State> active_states,
                            List<State> states,
                            List<Cube> cubes,
@@ -424,7 +430,7 @@ public class testRubixImmutable {
     public void solve() {
         Cube cube = Cube.a().move(Move.backward_twistLeft);
         State state = new State(cube, Collections.emptyList());
-        State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::complete);
+        State solution = solve(cube, this::complete);
         System.out.println(solution);
     }
 
@@ -432,7 +438,28 @@ public class testRubixImmutable {
     public void maxMix() {
         Cube cube = Cube.a();
         State state = new State(cube, Collections.emptyList());
-        State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::maxMix);
+        State solution = solve(cube, this::maxMix);
         System.out.println(solution);
+    }
+
+    public Cube random(Cube c, int x){
+        if(x == 0) return c;
+        else return random(c.move(randomEnum(Move.class)), x-1);
+    }
+
+    @Test
+    public void random(){
+        Cube cube = Cube.a();
+        cube = cube.move(randomEnum(Move.class));
+        System.out.println(cube);
+    }
+
+    @Test
+    public void random100(){
+        Cube cube = random(Cube.a(), 100);
+        System.out.println(cube);
+        State solution = solve(cube, this::complete);
+        System.out.println(solution);
+
     }
 }
