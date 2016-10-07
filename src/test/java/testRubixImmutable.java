@@ -11,15 +11,15 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class testRubixImmutable {
-    public static enum Color {
+    public enum Color {
         W, R, B, G, O, Y
     }
 
-    public static enum Orientation {
+    public enum Orientation {
         left, right, up, down, forward, backward
     }
 
-    public static enum MoveDirection {
+    public enum MoveDirection {
         left, right, up, down, twistLeft, twistRight
     }
 
@@ -203,7 +203,7 @@ public class testRubixImmutable {
         }
 
         public String color(Orientation face, Orientation o1, Orientation o2) {
-            return pieces.stream().filter(p -> p.onSide(face) && p.onSide(o1) && p.onSide(o2)).map(p -> p.color(face)).findFirst().map(c -> c.toString()).orElse("?");
+            return pieces.stream().filter(p -> p.onSide(face) && p.onSide(o1) && p.onSide(o2)).map(p -> p.color(face)).findFirst().map(Enum::toString).orElse("?");
         }
 
         public String toString() {
@@ -358,13 +358,13 @@ public class testRubixImmutable {
     }
 
     public <T> List<T> concat(List<T> a, List<T> b) {
-        List<T> all = new ArrayList<T>(a);
+        List<T> all = new ArrayList<>(a);
         all.addAll(b);
         return all;
     }
 
     public <T> List<T> concat(List<T> a, T b) {
-        List<T> all = new ArrayList<T>(a);
+        List<T> all = new ArrayList<>(a);
         all.add(b);
         return all;
     }
@@ -389,7 +389,7 @@ public class testRubixImmutable {
             if (solution.isPresent()) {
                 return solution.get();
             } else {
-                List<Cube> new_cubes = new_states.stream().map(s -> s.getCube()).collect(Collectors.toList());
+                List<Cube> new_cubes = new_states.stream().map(State::getCube).collect(Collectors.toList());
                 List<Cube> updated_cubes = concat(cubes, new_cubes);
                 List<State> updated_states = concat(states, new_states);
                 return getStates(new_states, updated_states, updated_cubes, solved);
@@ -400,7 +400,7 @@ public class testRubixImmutable {
     @Test
     public void solution() {
         Cube cube = Cube.a();
-        State state = new State(cube, Collections.EMPTY_LIST);
+        State state = new State(cube, Collections.emptyList());
         State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), c->cube.move(Move.backward_twistLeft).equals(c));
         System.out.println(solution);
     }
@@ -408,6 +408,11 @@ public class testRubixImmutable {
     public Boolean complete(Cube cube){
         Set<Side> sides = cube.getPieces().stream().flatMap(p -> p.getSides().stream()).collect(Collectors.toSet());
         return sides.size() == 6;
+    }
+
+    public Boolean maxMix(Cube cube){
+        Set<Side> sides = cube.getPieces().stream().flatMap(p -> p.getSides().stream()).collect(Collectors.toSet());
+        return sides.size() == 24;
     }
 
     @Test
@@ -418,8 +423,16 @@ public class testRubixImmutable {
     @Test
     public void solve() {
         Cube cube = Cube.a().move(Move.backward_twistLeft);
-        State state = new State(cube, Collections.EMPTY_LIST);
+        State state = new State(cube, Collections.emptyList());
         State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::complete);
+        System.out.println(solution);
+    }
+
+    @Test
+    public void maxMix() {
+        Cube cube = Cube.a();
+        State state = new State(cube, Collections.emptyList());
+        State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::maxMix);
         System.out.println(solution);
     }
 }
