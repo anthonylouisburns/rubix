@@ -117,11 +117,6 @@ public class testRubixImmutable {
         }
     }
 
-    public static class colorPrint {
-        int x;
-        int y;
-        Color c;
-    }
 
     public static class Piece {
         private final List<Side> sides;
@@ -170,6 +165,10 @@ public class testRubixImmutable {
 
         public Cube(List<Piece> pieces) {
             this.pieces = pieces;
+        }
+
+        public List<Piece> getPieces() {
+            return pieces;
         }
 
         public static Cube a() {
@@ -403,6 +402,24 @@ public class testRubixImmutable {
         Cube cube = Cube.a();
         State state = new State(cube, Collections.EMPTY_LIST);
         State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), c->cube.move(Move.backward_twistLeft).equals(c));
+        System.out.println(solution);
+    }
+
+    public Boolean complete(Cube cube){
+        Set<Side> sides = cube.getPieces().stream().flatMap(p -> p.getSides().stream()).collect(Collectors.toSet());
+        return sides.size() == 6;
+    }
+
+    @Test
+    public void complete(){
+        assert complete(Cube.a());
+    }
+
+    @Test
+    public void solve() {
+        Cube cube = Cube.a().move(Move.backward_twistLeft);
+        State state = new State(cube, Collections.EMPTY_LIST);
+        State solution = getStates(Collections.singletonList(state), Collections.singletonList(state), Collections.singletonList(cube), this::complete);
         System.out.println(solution);
     }
 }
